@@ -28,35 +28,35 @@
         name: configure_gpu_desktop
     - name: make a directory for sunshine conf contents
       ansible.builtin.file:
-        path: /home/exouser/.config/sunshine
+        path: /home/ubuntu/.config/sunshine
         state: directory
-      become_user: exouser
+      become_user: ubuntu
     - name: set sunshine configuration contents
       ansible.builtin.copy:
         src: files/sunshine_setup/sunshine.conf
-        dest: /home/exouser/.config/sunshine/sunshine.conf
-      become_user: exouser
+        dest: /home/ubuntu/.config/sunshine/sunshine.conf
+      become_user: ubuntu
     - name: make a directory
       ansible.builtin.file:
-        path: /home/exouser/.config/systemd/user/
+        path: /home/ubuntu/.config/systemd/user/
         state: directory
-      become_user: exouser
+      become_user: ubuntu
     - name: copy sunshine service to user folder
       ansible.builtin.copy:
         src: files/sunshine_setup/sunshine.service
-        dest: /home/exouser/.config/systemd/user/sunshine.service
-      become_user: exouser
+        dest: /home/ubuntu/.config/systemd/user/sunshine.service
+      become_user: ubuntu
     - name: user daemon reload
       ansible.builtin.systemd:
         scope: user
         daemon_reload: true
-      become_user: exouser
+      become_user: ubuntu
     - name: user systemd enable sunshine
       ansible.builtin.systemd:
         scope: user
         enabled: true
         name: sunshine
-      become_user: exouser
+      become_user: ubuntu
     - name: reboot the system and see what comes on line next
       ansible.builtin.reboot:
       become: true
