@@ -1,0 +1,18 @@
+#.config/systemd/user/graphical-session.target.wants/sunshine.service
+[Unit]
+Description=Self-hosted game stream host for Moonlight
+StartLimitIntervalSec=500
+StartLimitBurst=5
+After=network.target cloud-init.service configure_gpu_desktop.service graphical-session.target
+
+[Service]
+# Avoid starting Sunshine before the desktop is fully initialized.
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/sunshine
+
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+#WantedBy=xdg-desktop-autostart.target
+WantedBy=graphical-session.target

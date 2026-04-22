@@ -2,71 +2,64 @@
 - hosts: all
   become: true
   tasks:
-    - name: Installing NGINX, Mariadb, and UFW
-      ansible.builtin.package:
-        name:
-        - "nginx-core"
-        - mariadb-server
-        - ufw
+
+    - name: Install a .deb package from the internet using the apt module
+      ansible.builtin.apt:
+        deb: https://github.com/LizardByte/Sunshine/releases/download/v2025.924.154138/sunshine-ubuntu-24.04-amd64.deb
         state: present
-
-    - name: Copying over into sites-available
-      ansible.builtin.template:
-        src: files/nginx-default-http.j2
-        dest: /etc/nginx/sites-available/nginx-default
-        mode: 0644
-
-    - name: Generating Hello World!
+    - name: copy headless desktop file to opt
       ansible.builtin.copy:
-        src: hello_world.index
-        dest: /var/www/html/index.html
-        backup: true
-        mode: 0755
-      notify: restart NGINX
-
-    - name: Enabling site
+        src: files/sunshine_setup/gpu_setup.sh
+        dest: /opt/gpu_setup.sh
+    - name: make executable
       ansible.builtin.file:
-        src: /etc/nginx/sites-available/nginx-default
-        dest: /etc/nginx/sites-enabled/nginx-default
-        state: link
-      notify: restart NGINX
-
-    - name: Making sure nginx is started.
-      ansible.builtin.service:
-        name: nginx
-        state: started
+        path: /opt/gpu_setup.sh
+        mode: a+x
+    - name: add service file 
+      ansible.builtin.copy:
+        src: files/sunshine_setup/gpu_configure.service
+        dest: /etc/systemd/system/configure_gpu_desktop.service
+    - name: reload the daemon 
+      ansible.builtin.systemd:
+        daemon_reload: true
+    - name: reenable the service 
+      ansible.builtin.systemd:
         enabled: true
-
-    - name: Enabling Mariadb
-      ansible.builtin.service:
-        name: mariadb
-        state: started
+        name: configure_gpu_desktop
+    - name: make a directory for sunshine conf contents
+      ansible.builtin.file:
+        path: /home/exouser/.config/sunshine
+        state: directory
+      become_user: exouser
+    - name: set sunshine configuration contents
+      ansible.builtin.copy:
+        src: files/sunshine_setup/sunshine.conf
+        dest: /home/exouser/.config/sunshine/sunshine.conf
+      become_user: exouser
+    - name: make a directory
+      ansible.builtin.file:
+        path: /home/exouser/.config/systemd/user/
+        state: directory
+      become_user: exouser
+    - name: copy sunshine service to user folder
+      ansible.builtin.copy:
+        src: files/sunshine_setup/sunshine.service
+        dest: /home/exouser/.config/systemd/user/sunshine.service
+      become_user: exouser
+    - name: user daemon reload
+      ansible.builtin.systemd:
+        scope: user
+        daemon_reload: true
+      become_user: exouser
+    - name: user systemd enable sunshine
+      ansible.builtin.systemd:
+        scope: user
         enabled: true
-
-    - name: Enabling UFW
-      ufw:
-        state: enabled
-
-    - name: Rate limiting ssh
-      ufw:
-        rule: limit
-        port: ssh
-        proto: tcp
-
-    - name: Allowing port 80
-      ufw:
-        rule: allow
-        port: '80'
-        proto: tcp
-
-    - name: Allowing port 443
-      ufw:
-        rule: allow
-        port: '443'
-        proto: tcp
-
-  handlers:
-    - name: restart NGINX
-      ansible.builtin.service:
-        name: nginx
-        state: restarted
+        name: sunshine
+      become_user: exouser
+    - name: reboot the system and see what comes on line next
+      ansible.builtin.reboot:
+      become: true
+    - name: check nvidia-smi for result
+      ansible.builtin.shell:
+        cmd: nvidia-smi

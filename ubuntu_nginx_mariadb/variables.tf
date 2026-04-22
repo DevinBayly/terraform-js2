@@ -4,5 +4,5 @@ variable "flavor_id" {
 }
 
 variable "key_pair" {
-  default = ""
+  default = "urche"
 }
