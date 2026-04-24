@@ -1,5 +1,5 @@
 variable "flavor_id" {
-  default     = "3"
+  default     = "11"
   description = "Flavor of VM on Jetstream 2"
 }
 

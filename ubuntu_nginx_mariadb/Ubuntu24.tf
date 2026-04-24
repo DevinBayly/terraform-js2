@@ -3,22 +3,22 @@
 ################
 # creating leader
 
-resource "openstack_networking_floatingip_v2" "terraform_floatip_ubuntu22" {
+resource "openstack_networking_floatingip_v2" "terraform_floatip_ubuntu24" {
   pool = "public"
 }
 
-# assigning floating ip from public pool to ubuntu22 VM
-resource "openstack_compute_floatingip_associate_v2" "ubuntu22_float" {
-  floating_ip           = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
-  instance_id           = openstack_compute_instance_v2.ubuntu22.id
+# assigning floating ip from public pool to ubuntu24 VM
+resource "openstack_compute_floatingip_associate_v2" "ubuntu24_float" {
+  floating_ip           = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
+  instance_id           = openstack_compute_instance_v2.ubuntu24.id
   wait_until_associated = true
 }
 
-resource "openstack_compute_instance_v2" "ubuntu22" {
+resource "openstack_compute_instance_v2" "ubuntu24" {
   name = "devinnginxtest"
-  # ID of JS-API-Featured-ubuntu22-Latest
+  # ID of JS-API-Featured-ubuntu24-Latest
   #image_id  = var.image_id
-  image_name = "Featured-Ubuntu22"
+  image_name = "Featured-Ubuntu24"
   flavor_id  = var.flavor_id
   # you'll need to set this to your public key name on jetstream
   key_pair        = var.key_pair
@@ -43,7 +43,7 @@ resource "null_resource" "ansible_provisioners" {
     ]
     connection {
       type = "ssh"
-      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
       user = "ubuntu"
     }
   }
@@ -53,7 +53,7 @@ resource "null_resource" "ansible_provisioners" {
   }
   connection {
     type = "ssh"
-    host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
+    host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
     user = "ubuntu"
   }
   provisioner "remote-exec" {
@@ -62,10 +62,30 @@ resource "null_resource" "ansible_provisioners" {
     ]
     connection {
       type = "ssh"
-      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "(sleep 2; reboot)&",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "nvidia-smi",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu24.address
       user = "ubuntu"
     }
   }
 
-  depends_on = [openstack_compute_floatingip_associate_v2.ubuntu22_float]
+  depends_on = [openstack_compute_floatingip_associate_v2.ubuntu24_float]
 }

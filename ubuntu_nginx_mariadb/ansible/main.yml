@@ -5,6 +5,10 @@
 
     - name: Install a .deb package from the internet using the apt module
       ansible.builtin.apt:
+        name: ubuntu-gnome-desktop
+        state: present
+    - name: Install a .deb package from the internet using the apt module
+      ansible.builtin.apt:
         deb: https://github.com/LizardByte/Sunshine/releases/download/v2025.924.154138/sunshine-ubuntu-24.04-amd64.deb
         state: present
     - name: copy headless desktop file to opt
@@ -57,9 +61,8 @@
         enabled: true
         name: sunshine
       become_user: ubuntu
-    - name: reboot the system and see what comes on line next
-      ansible.builtin.reboot:
-      become: true
-    - name: check nvidia-smi for result
-      ansible.builtin.shell:
-        cmd: nvidia-smi
+    - name: add to render and video groups
+      ansible.builtin.user:
+        name: ubuntu
+        uid: 1000
+        groups: ['render', 'video']
