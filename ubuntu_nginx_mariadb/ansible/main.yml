@@ -5,64 +5,9 @@
 
     - name: Install a .deb package from the internet using the apt module
       ansible.builtin.apt:
-        name: ubuntu-gnome-desktop
+        name: xfce4
         state: present
     - name: Install a .deb package from the internet using the apt module
       ansible.builtin.apt:
-        deb: https://github.com/LizardByte/Sunshine/releases/download/v2025.924.154138/sunshine-ubuntu-24.04-amd64.deb
+        name: xorg
         state: present
-    - name: copy headless desktop file to opt
-      ansible.builtin.copy:
-        src: files/sunshine_setup/gpu_setup.sh
-        dest: /opt/gpu_setup.sh
-    - name: make executable
-      ansible.builtin.file:
-        path: /opt/gpu_setup.sh
-        mode: a+x
-    - name: add service file 
-      ansible.builtin.copy:
-        src: files/sunshine_setup/gpu_configure.service
-        dest: /etc/systemd/system/configure_gpu_desktop.service
-    - name: reload the daemon 
-      ansible.builtin.systemd:
-        daemon_reload: true
-    - name: reenable the service 
-      ansible.builtin.systemd:
-        enabled: true
-        name: configure_gpu_desktop
-    - name: make a directory for sunshine conf contents
-      ansible.builtin.file:
-        path: /home/ubuntu/.config/sunshine
-        state: directory
-      become_user: ubuntu
-    - name: set sunshine configuration contents
-      ansible.builtin.copy:
-        src: files/sunshine_setup/sunshine.conf
-        dest: /home/ubuntu/.config/sunshine/sunshine.conf
-      become_user: ubuntu
-    - name: make a directory
-      ansible.builtin.file:
-        path: /home/ubuntu/.config/systemd/user/
-        state: directory
-      become_user: ubuntu
-    - name: copy sunshine service to user folder
-      ansible.builtin.copy:
-        src: files/sunshine_setup/sunshine.service
-        dest: /home/ubuntu/.config/systemd/user/sunshine.service
-      become_user: ubuntu
-    - name: user daemon reload
-      ansible.builtin.systemd:
-        scope: user
-        daemon_reload: true
-      become_user: ubuntu
-    - name: user systemd enable sunshine
-      ansible.builtin.systemd:
-        scope: user
-        enabled: true
-        name: sunshine
-      become_user: ubuntu
-    - name: add to render and video groups
-      ansible.builtin.user:
-        name: ubuntu
-        uid: 1000
-        groups: ['render', 'video']
