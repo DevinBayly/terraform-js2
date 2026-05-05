@@ -3,33 +3,59 @@
   become: true
   tasks:
 
+    - name: add to render and video groups
+      ansible.builtin.user:
+        name: ubuntu
+        uid: 1000
+        groups: ['render', 'video']
     - name: Install a .deb package from the internet using the apt module
       ansible.builtin.apt:
+        update-cache: true
         name: ubuntu-gnome-desktop
         state: present
-    - name: Install a .deb package from the internet using the apt module
-      ansible.builtin.apt:
-        deb: https://github.com/LizardByte/Sunshine/releases/download/v2025.924.154138/sunshine-ubuntu-24.04-amd64.deb
-        state: present
+    
+    # borrowing things from Franks code here https://gitlab.com/exosphere/exosphere/-/blob/master/ansible/roles/desktop-setup/tasks/main.yml?ref_type=heads
+    - name: 'Automatic login enabled in GDM custom config'
+      blockinfile:
+        path: '/etc/gdm3/custom.conf'
+        block: |
+          AutomaticLoginEnable = true
+          AutomaticLogin = ubuntu
+        insertafter: '\[daemon\]'
+    - name: 'graphical environment started on boot'
+      systemd:
+        name: 'graphical.target'
+        enabled: 'yes'
+
+    - name: 'graphical environment set as default systemd target'
+      command: 'systemctl set-default graphical.target'
+
+    - name: 'graphical environment isolated'
+      command: 'systemctl isolate graphical.target'
+
     - name: copy headless desktop file to opt
       ansible.builtin.copy:
         src: files/sunshine_setup/gpu_setup.sh
         dest: /opt/gpu_setup.sh
+
     - name: make executable
       ansible.builtin.file:
         path: /opt/gpu_setup.sh
         mode: a+x
-    - name: add service file 
-      ansible.builtin.copy:
-        src: files/sunshine_setup/gpu_configure.service
-        dest: /etc/systemd/system/configure_gpu_desktop.service
-    - name: reload the daemon 
-      ansible.builtin.systemd:
-        daemon_reload: true
-    - name: reenable the service 
-      ansible.builtin.systemd:
-        enabled: true
-        name: configure_gpu_desktop
+
+    - name: run setup once
+      command: 'bash /opt/gpu_setup.sh'
+      ignore_errors: true
+
+    - name: grab latest sunshine 
+      command: 'wget https://github.com/LizardByte/Sunshine/releases/download/v2026.428.130031/sunshine-ubuntu-22.04-amd64.deb'
+    - name: install from disk
+      command: 'apt install ./sunshine-ubuntu-22.04-amd64.deb -y'
+    # used to work, now it errors a lot
+    # - name: Install a .deb package from the internet using the apt module, install sunshine
+    #   ansible.builtin.apt:
+    #     deb: https://github.com/LizardByte/Sunshine/releases/download/v2026.428.130031/sunshine-ubuntu-22.04-amd64.deb
+    #     state: present
     - name: make a directory for sunshine conf contents
       ansible.builtin.file:
         path: /home/ubuntu/.config/sunshine
@@ -61,8 +87,3 @@
         enabled: true
         name: sunshine
       become_user: ubuntu
-    - name: add to render and video groups
-      ansible.builtin.user:
-        name: ubuntu
-        uid: 1000
-        groups: ['render', 'video']
