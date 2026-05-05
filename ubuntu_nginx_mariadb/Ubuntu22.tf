@@ -106,6 +106,26 @@ resource "null_resource" "ansible_provisioners" {
       user = "ubuntu"
     }
   }
+  provisioner "remote-exec" {
+    inline = [
+      "(sleep 10; reboot)&",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "nvidia-smi",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.terraform_floatip_ubuntu22.address
+      user = "ubuntu"
+    }
+  }
 
   depends_on = [openstack_compute_floatingip_associate_v2.ubuntu22_float]
 }
