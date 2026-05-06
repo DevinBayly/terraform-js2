@@ -1,0 +1,117 @@
+{
+  "schema_url": "https://gitlab.com/cyverse/cacao-common/-/raw/master/template/metadata-schemas/v3/schema.json",
+  "schema_version": "3",
+  "name": "single image openstack instances",
+  "author": "Edwin Skidmore",
+  "author_email": "edwin@cyverse.org",
+  "description": "simple launch of one or more vms",
+  "template_type": "openstack_terraform",
+  "purpose": "openstack_compute",
+  "cacao_pre_tasks": [],
+  "cacao_post_tasks": [
+    {
+      "type": "ansible",
+      "location": "cacao_atmosphere_legacy"
+    }
+  ],
+  "parameters": [
+    {
+      "name": "username",
+      "type": "cacao_username",
+      "default": "username",
+      "description": "CACAO username"
+    },
+    {
+      "name": "region",
+      "type": "cacao_provider_region",
+      "default": "IU",
+      "description": "Openstack region"
+    },
+    {
+      "name": "instance_name",
+      "type": "string",
+      "description": "Instance name",
+      "editable": true
+    },
+    {
+      "name": "instance_count",
+      "type": "integer",
+      "default": 1,
+      "description": "# of instances",
+      "editable": true
+    },
+    {
+      "name": "image",
+      "type": "cacao_provider_image",
+      "description": "Boot image id",
+      "default": ""
+    },
+    {
+      "name": "image_name",
+      "type": "cacao_provider_image_name",
+      "description": "Boot image name",
+      "default": ""
+    },
+    {
+      "name": "flavor",
+      "type": "cacao_provider_flavor",
+      "description": "Instance type"
+    },
+    {
+      "name": "project",
+      "type": "cacao_provider_project",
+      "description": "OpenStack Project ID"
+    },
+    {
+      "name": "keypair",
+      "type": "cacao_provider_key_pair",
+      "default": "cacao-ssh-key",
+      "description": "Key-pair for instance access"
+    },
+    {
+      "name": "power_state",
+      "type": "string",
+      "default": "active",
+      "enum": ["active", "shutoff", "suspend", "shelved_offloaded"],
+      "description": "Power state",
+      "editable": true
+    },
+    {
+      "name": "ip_pool",
+      "type": "cacao_provider_external_network",
+      "default": "external_network_name",
+      "description": "IP pool"
+    },
+    {
+      "name": "user_data",
+      "type": "cacao_cloud_init",
+      "description": "cloud init script"
+    },
+    {
+      "name": "root_storage_source",
+      "type": "string",
+      "default": "image",
+      "enum": ["image"],
+      "description": "Source of root disk; currently, only image is supported "
+    },
+    {
+      "name": "root_storage_type",
+      "type": "string",
+      "default": "local",
+      "enum": ["local", "volume"],
+      "description": "type of root storage, either local or volume"
+    },
+    {
+      "name": "root_storage_size",
+      "type": "integer",
+      "description": "Size of root storage in GB",
+      "default": -1
+    },
+    {
+      "name": "root_storage_delete_on_termination",
+      "type": "bool",
+      "description": "if true, will delete the root storage when instance is deleted",
+      "default": true
+    }
+  ]
+}

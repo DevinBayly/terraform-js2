@@ -1,0 +1,55 @@
+{
+    "schema_url": "https://gitlab.com/cyverse/cacao-common/-/raw/master/template/ui-schemas/v1/schema.json",
+    "schema_version": "1",
+    "author": "Sean Davey",
+    "author_email": "sdavey@arizona.edu",
+    "steps": [
+        {
+            "title": "Parameters",
+            "items": [
+                {
+                    "name": "region",
+                    "ui_label": "Choose Region"
+                },
+                {
+                    "name": "instance_name",
+                    "ui_label": "Instance name"
+                },
+                {
+                    "name": "power_state",
+                    "ui_label": "Power state"
+                },
+                {
+                    "name": "image_name",
+                    "ui_label": "Boot image name",
+                    "parameters": [
+                        { "key": "windows_disclaimer", "value": true }
+                    ]
+                },
+                {
+                    "type": "row",
+                    "items":[
+                        {
+                            "name": "instance_count",
+                            "ui_label": "# of Instances"
+                        },
+                        {
+                            "name": "flavor",
+                            "ui_label": "Size"
+                        }
+                    ]
+                },
+                {
+                    "type": "advanced_settings",
+                    "collapsible": true,
+                    "title": "Advanced",
+                    "items": [
+                        {
+                            "name": "root_storage"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
