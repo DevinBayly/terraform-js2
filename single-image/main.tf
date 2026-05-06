@@ -47,6 +47,104 @@ resource "openstack_compute_instance_v2" "os_instances" {
   }
 }
 
+resource "null_resource" "ansible_provisioners" {
+  provisioner "remote-exec" {
+    inline = [
+      "echo \"Checking if cloud init is running\"",
+      "sudo cloud-init status --wait",
+      "sudo apt update",
+      "sudo apt install python3 ansible -y",
+      "rm -rf ~/ansible"
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "file" {
+    source      = "ansible"
+    destination = "ansible"
+  }
+  connection {
+    type = "ssh"
+    host = openstack_networking_floatingip_v2.os_floatingips.address
+    user = "ubuntu"
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook -i ansible/inventory.ini ansible/main.yml ",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "(sleep 2; reboot)&",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "nvidia-smi",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "(sleep 4; reboot)&",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "nvidia-smi",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "(sleep 10; reboot)&",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+  provisioner "remote-exec" {
+    inline = [
+      "nvidia-smi",
+    ]
+    connection {
+      type = "ssh"
+      host = openstack_networking_floatingip_v2.os_floatingips.address
+      user = "ubuntu"
+    }
+  }
+
+  depends_on = [openstack_compute_floatingip_associate_v2.os_floatingips_associate]
+}
+
 data "openstack_networking_network_v2" "ext_network" {
   # make the assumption that there is only 1 external network per region, this will fail if otherwise
   region = var.region

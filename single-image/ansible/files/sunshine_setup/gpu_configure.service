@@ -1,0 +1,15 @@
+#/etc/systemd/system/configure_gpu_desktop.service
+[Unit]
+Description=My GPU desktop
+After=network.target cloud-init.service
+
+[Service]
+Type=simple
+ExecStart=/opt/gpu_setup.sh
+Restart=on-failure
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
+

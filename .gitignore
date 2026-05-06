@@ -35,3 +35,4 @@ override.tf.json
 *.sh
 *inventory.ini
 .DS_STORE
+cacao_token

@@ -1,1 +1,0 @@
-This directory is empty intentionally and will contain the ansible inventory for future use
