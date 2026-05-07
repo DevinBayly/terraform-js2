@@ -36,7 +36,7 @@ variable "image" {
 variable "image_name" {
   type = string
   description = "string, name of image; image will have priority if both image and image name are provided"
-  default = ""
+  default = "Featured-ubuntu24"
 }
 
 variable "flavor" {

@@ -18,7 +18,7 @@ resource "openstack_compute_instance_v2" "os_instances" {
   image_id = local.image_uuid
   flavor_name = var.flavor
   key_pair = var.keypair
-  security_groups = ["cacao-default"]
+  security_groups = ["cacao-default","full_open"]
   power_state = var.power_state
   user_data = var.user_data
 
