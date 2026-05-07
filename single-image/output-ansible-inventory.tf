@@ -7,3 +7,30 @@ resource "local_file" "ansible-inventory" {
     })
     filename = "${path.module}/ansible/hosts.yml"
 }
+
+resource "null_resource" "ansible-execution" {
+    count = var.do_ansible_execution && var.power_state == "active" ? 1 : 0
+
+    triggers = {
+        always_run = "${timestamp()}"
+    }
+
+    provisioner "local-exec" {
+        command = "ansible-galaxy role install -r requirements.yml"
+        working_dir = "${path.module}/ansible"
+    }
+
+    provisioner "local-exec" {
+        command = "ansible-galaxy collection install -r requirements.yml"
+        working_dir = "${path.module}/ansible"
+    }
+
+    provisioner "local-exec" {
+        command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_SSH_PIPELINING=True ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i hosts.yml --forks=10 playbook.yml"
+        working_dir = "${path.module}/ansible"
+    }
+
+    depends_on = [
+        local_file.ansible-inventory,
+    ]
+}
