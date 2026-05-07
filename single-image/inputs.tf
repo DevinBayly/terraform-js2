@@ -96,3 +96,9 @@ variable "root_storage_delete_on_termination" {
   description = "bool, if true delete on termination"
   default = true
 }
+
+variable "do_ansible_execution" {
+  type = bool
+  description = "bool, if true run ansible"
+  default = true
+}
