@@ -1,5 +1,5 @@
----
-- hosts: all
+- name: setup sunshine
+  hosts: all
   become: true
   tasks:
 

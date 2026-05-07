@@ -10,6 +10,6 @@ all:
 %{ for index, group in server_ips ~}
         ${ server_names[index] }:
             ansible_host: ${ server_ips[index] }
+            ansible_user: ubuntu
 %{ endfor ~}
-
 
