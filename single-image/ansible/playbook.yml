@@ -1,3 +1,35 @@
+- name: PLAY; connectivity and finding the user
+  hosts: all
+  gather_facts: false
+  tags: find_user
+  become: false
+  any_errors_fatal: true
+  tasks:
+  - name: SET_FACT; set python interpreter
+    ansible.builtin.set_fact: ansible_python_interpreter="/usr/bin/python3"
+
+  - name: WAIT_FOR; Wait for ssh to be avaliable and connect
+    ansible.builtin.wait_for:
+      port: 22
+      host: "{{ ( ansible_ssh_host | default(ansible_host)) | default(inventory_hostname) }}"
+      search_regex: OpenSSH
+      delay: 10
+      timeout: 600
+    connection: local
+
+  # wait for 1 minute after establishing a connection
+  - name: PAUSE; because Jetstream 2 networking
+    ansible.builtin.pause:
+      minutes: 1
+
+  - ansible.builtin.include_tasks: 'find_connection.yml'
+    loop: "{{ CONNECTION_USERNAMES }}"
+
+  - name: FAIL; report failure if ansible_user not found
+    ansible.builtin.fail:
+      msg: "?Could not find a valid ansible_user for subsequent ssh connections; exiting playbook."
+    when: ansible_user is not defined
+
 - name: setup sunshine
   hosts: all
   become: true
