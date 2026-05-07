@@ -6,6 +6,7 @@ variable "username" {
 variable "project" {
   type = string
   description = "project name"
+  
 }
 
 variable "region" {
@@ -17,6 +18,7 @@ variable "region" {
 variable "instance_name" {
   type = string
   description = "name of instance"
+  default = "cacaotesting"
 }
 
 variable "instance_count" {
@@ -40,13 +42,13 @@ variable "image_name" {
 variable "flavor" {
   type = string
   description = "flavor or size of instance to launch"
-  default = "m1.tiny"
+  default = "g3.medium"
 }
 
 variable "keypair" {
   type = string
   description = "keypair to use when launching"
-  default = ""
+  default = "urche"
 }
 
 variable "power_state" {
