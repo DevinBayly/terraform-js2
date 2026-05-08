@@ -4,6 +4,7 @@ resource "local_file" "ansible-inventory" {
     {
         server_ips = openstack_compute_floatingip_associate_v2.os_floatingips_associate.*.floating_ip
         server_names = openstack_compute_instance_v2.os_instances.*.name # we could use this instead of an generically generated index name
+        prj_name = var.project
     })
     filename = "${path.module}/ansible/hosts.yml"
 }
