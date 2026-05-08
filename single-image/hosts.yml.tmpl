@@ -11,6 +11,8 @@ all:
         ${ server_names[index] }:
             ansible_host: ${ server_ips[index] }
             csrf_hostname: '${ server_names[index] }'
+            prj_name: '${var.project}'
+            
 %{ endfor ~}
     vars:
         CONNECTION_USERNAMES:
