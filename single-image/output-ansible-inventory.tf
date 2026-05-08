@@ -34,11 +34,7 @@ resource "null_resource" "shelve-unshelve" {
       count = var.instance_count
 
       provisioner "local-exec" {
-        command = "openstack server shelve ${openstack_compute_instance_v2.os_instances[count.index].id} --wait && sleep 30"
-      }
-      
-      provisioner "local-exec" {
-        command = "openstack server unshelve ${openstack_compute_instance_v2.os_instances[count.index].id} --wait"
+        command = "openstack server shelve ${openstack_compute_instance_v2.os_instances[count.index].id}"
       }
       depends_on = [
         null_resource.ansible-execution
