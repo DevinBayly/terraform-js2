@@ -104,10 +104,11 @@
     - name: add specific host to ending of config file
       ansible.builtin.lineinfile:
         path: '/home/ubuntu/.config/sunshine/sunshine.conf'
-        line: 'https://{{csrf_hostname}}:47990'
+        line: 'https://{{csrf_hostname.stdout}}:47990'
         create: yes
     - name: set a few default variables in bashrc
       ansible.builtin.blockinfile:
+        path: /home/ubuntu/.bashrc
         insertafter: EOF
         block: |
           export XAUTHORITY=/run/user/1000/gdm/Xauthority
