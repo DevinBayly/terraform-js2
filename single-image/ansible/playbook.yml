@@ -105,7 +105,7 @@
     - name: add specific host to ending of config file
       ansible.builtin.lineinfile:
         path: '/home/ubuntu/.config/sunshine/sunshine.conf'
-        line: 'csrf_origins_allowed = https://{{csrf_hostname}}.{{prj_name}}.projects.jetstream-cloud.org:47990'
+        line: 'csrf_allowed_origins = https://{{csrf_hostname}}.{{prj_name}}.projects.jetstream-cloud.org:47990'
         create: yes
     - name: debug show csrf hostname
       ansible.builtin.debug:
