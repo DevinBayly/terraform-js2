@@ -98,14 +98,14 @@
         src: files/sunshine_setup/sunshine.conf
         dest: /home/ubuntu/.config/sunshine/sunshine.conf
       become_user: ubuntu
-    - name: register hostname as variable
-      ansible.builtin.shell: 'curl http://whatismyhostname.com/raw/hostname/'
-      register: csrf_hostname
     - name: add specific host to ending of config file
       ansible.builtin.lineinfile:
         path: '/home/ubuntu/.config/sunshine/sunshine.conf'
-        line: 'https://{{csrf_hostname.stdout}}:47990'
+        line: 'https://{{csrf_hostname}}:47990'
         create: yes
+    - name: debug show csrf hostname
+      ansible.builtin.debug:
+        msg: "{{ csrf_hostname }}"
     - name: set a few default variables in bashrc
       ansible.builtin.blockinfile:
         path: /home/ubuntu/.bashrc
