@@ -78,11 +78,15 @@
     - name: run setup once
       command: 'bash /opt/gpu_setup.sh'
       ignore_errors: true
-
+    - name: include correct sunshine deb link
+      include_vars: "{{ item }}"
+      with_first_found:
+        - "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}.yml"
+        
     - name: grab latest sunshine 
-      command: 'wget https://github.com/LizardByte/Sunshine/releases/download/v2026.508.45922/sunshine-ubuntu-24.04-amd64.deb'
+      command: 'wget {{ sunshine_deb_url }}'
     - name: install from disk
-      command: 'apt install ./sunshine-ubuntu-24.04-amd64.deb -y'
+      command: 'apt install ./{{ sunshine_deb_name  }} -y'
     # used to work, now it errors a lot
     # - name: Install a .deb package from the internet using the apt module, install sunshine
     #   ansible.builtin.apt:
