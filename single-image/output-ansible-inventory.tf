@@ -21,10 +21,6 @@ resource "null_resource" "ansible-execution" {
         command = "ANSIBLE_HOST_KEY_CHECKING=False ANSIBLE_SSH_PIPELINING=True ANSIBLE_CONFIG=ansible.cfg ansible-playbook -i hosts.yml --forks=10 playbook.yml"
         working_dir = "${path.module}/ansible"
     }
-    provisioner "local-exec" {
-        command  = "pip3 install python-openstackclient"
-
-    }
 
     depends_on = [
         local_file.ansible-inventory,
