@@ -139,7 +139,7 @@
         name: sunshine
       become_user: ubuntu
     - name: install openstack sdk 
-      command: "pip3 install python-openstackclient --break-system-packages"
+      command: "pip3 install openstacksdk --break-system-packages"
     - name: shelve a compute instance
       openstack.cloud.server_action:
         action: shelve
