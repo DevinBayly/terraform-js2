@@ -5,6 +5,7 @@ resource "local_file" "ansible-inventory" {
         server_ips = openstack_compute_floatingip_associate_v2.os_floatingips_associate.*.floating_ip
         server_names = openstack_compute_instance_v2.os_instances.*.name # we could use this instead of an generically generated index name
         prj_name = var.project
+        server_ids = openstack_compute_instance_v2.os_instances.*.id
     })
     filename = "${path.module}/ansible/hosts.yml"
 }
@@ -28,15 +29,4 @@ resource "null_resource" "ansible-execution" {
     depends_on = [
         local_file.ansible-inventory,
     ]
-}
-
-resource "null_resource" "shelve-unshelve" {
-      count = var.instance_count
-
-      provisioner "local-exec" {
-        command = "openstack server shelve ${openstack_compute_instance_v2.os_instances[count.index].id}"
-      }
-      depends_on = [
-        null_resource.ansible-execution
-      ]
 }
