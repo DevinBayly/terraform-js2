@@ -12,7 +12,7 @@ all:
             ansible_host: ${ server_ips[index] }
             csrf_hostname: '${ server_names[index] }'
             prj_name: '${lower(prj_name)}'
-            openstack_server_id:'${server_ids[index]}'
+            openstack_server_id: '${server_ids[index]}'
 
 %{ endfor ~}
     vars:

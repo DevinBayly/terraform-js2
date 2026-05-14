@@ -144,17 +144,17 @@
         server: '{{openstack_server_id}}'
         wait: true
         timeout: 200
-        delay: 10
-        retries: 5
-        register: result
-        until: result is success
+      delay: 10
+      retries: 5
+      register: result
+      until: result is success
     - name: unshelve a compute instance
       openstack.cloud.server_action:
         action: unshelve
         server: '{{openstack_server_id}}'
         wait: true
         timeout: 200
-        delay: 10
-        retries: 5
-        register: result
-        until: result is success
+      delay: 10
+      retries: 5
+      register: result
+      until: result is success
