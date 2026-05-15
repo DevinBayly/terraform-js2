@@ -47,10 +47,6 @@ resource "openstack_compute_instance_v2" "os_instances" {
   }
 }
 
-resource "openstack_compute_keypair_v2" "test-keypair" {
-  name       = "urche-ubuntu"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDoQWgvBoXPl6dTILmW2fulgCefPFRX9rRkLAyH3Udc2pZzkGLpjA5o3UUtBG0+p1rkv6rKZHhqVmxCL3ytQBKQ5vL2uHZnOVzsdSdmv5y2JYj/hxLHZvcF6arqj7HgWQsO9Rgn5E1bnuLVo4jnkDacZhAvcXrJTUQqft/KdYW4FH+IH8XN8qLb4F5IvFKRIZLF+vECIyDILAs2us3AIe+fEmtCDQyWGXVgmG4fIYOXSUUn+cKebCgPF9jc9wnaHUmueAxwmFZ4Xst+hx/HQQtp+zJqygbRPirw5dmnrvYfoeZw15135y81W4Pq8MQx/MpCmdKC8hf+uatV9YlhwjnFRd7i8OrMN/rXaGXE/ISIKcCtK8PN32FHiVzUhsBZlGFh5U+Z27uy4SrEmUKDPRkMsQbVHXRxzQHvPg+K2f+uH5E45Z0+aanKjWz0Im5r9YPW9xYR8aoSyRxVSDFMi0LYCwS8oGU+cyoWykpMRZjRNCsJdwr4Yqusdfw2KEjvqMk= urche@urche-Latitude-5320"
-}
 
 data "openstack_networking_network_v2" "ext_network" {
   # make the assumption that there is only 1 external network per region, this will fail if otherwise
