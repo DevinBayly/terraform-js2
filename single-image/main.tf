@@ -47,6 +47,7 @@ resource "openstack_compute_instance_v2" "os_instances" {
   }
 }
 
+
 data "openstack_networking_network_v2" "ext_network" {
   # make the assumption that there is only 1 external network per region, this will fail if otherwise
   region = var.region
