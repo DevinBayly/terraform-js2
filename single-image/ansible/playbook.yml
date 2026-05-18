@@ -138,8 +138,8 @@
         enabled: true
         name: sunshine
       become_user: ubuntu
-    - name: install openstack sdk 
-      command: "pip3 install openstacksdk --break-system-packages"
+    - name: install openstack sdk , gets the right sdk and determines if flag is needed depending on os
+      command: "pip3 install {{ open_stack_sdk_and_flag }}"
     - name: shelve a compute instance
       openstack.cloud.server_action:
         action: shelve

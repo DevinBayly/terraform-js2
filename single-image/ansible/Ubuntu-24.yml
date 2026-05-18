@@ -1,3 +1,4 @@
 # sunshine_deb_url: 'https://github.com/LizardByte/Sunshine/releases/download/v2026.508.45922/sunshine-ubuntu-24.04-amd64.deb'
 sunshine_deb_url: 'https://github.com/LizardByte/Sunshine/releases/download/v2026.518.24409/sunshine-ubuntu-24.04-amd64.deb'
 sunshine_deb_name: 'sunshine-ubuntu-24.04-amd64.deb'
+open_stack_sdk_and_flag: openstacksdk --break-system-packages
