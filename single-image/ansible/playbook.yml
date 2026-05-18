@@ -138,25 +138,25 @@
         enabled: true
         name: sunshine
       become_user: ubuntu
-    - name: install openstack sdk , gets the right sdk and determines if flag is needed depending on os
-      command: "pip3 install {{ open_stack_sdk_and_flag }}"
-    - name: shelve a compute instance
-      openstack.cloud.server_action:
-        action: shelve
-        server: '{{openstack_server_id}}'
-        wait: true
-        timeout: 200
-      delay: 10
-      retries: 5
-      register: result
-      until: result is success
-    - name: unshelve a compute instance
-      openstack.cloud.server_action:
-        action: unshelve
-        server: '{{openstack_server_id}}'
-        wait: true
-        timeout: 200
-      delay: 10
-      retries: 5
-      register: result
-      until: result is success
+    # - name: install openstack sdk , gets the right sdk and determines if flag is needed depending on os
+    #   command: "pip3 install {{ open_stack_sdk_and_flag }}"
+    # - name: shelve a compute instance
+    #   openstack.cloud.server_action:
+    #     action: shelve
+    #     server: '{{openstack_server_id}}'
+    #     wait: true
+    #     timeout: 200
+    #   delay: 10
+    #   retries: 5
+    #   register: result
+    #   until: result is success
+    # - name: unshelve a compute instance
+    #   openstack.cloud.server_action:
+    #     action: unshelve
+    #     server: '{{openstack_server_id}}'
+    #     wait: true
+    #     timeout: 200
+    #   delay: 10
+    #   retries: 5
+    #   register: result
+    #   until: result is success
