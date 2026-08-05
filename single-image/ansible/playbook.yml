@@ -30,16 +30,50 @@
       msg: "?Could not find a valid ansible_user for subsequent ssh connections; exiting playbook."
     when: ansible_user is not defined
 
+- name: setup vm users
+  hosts: all
+  become: true
+  tasks:
+    - name: create vm username account
+      ansible.builtin.user:
+        name: "{{ vm_username }}"
+        shell: /bin/bash
+        groups: [sudo, render, video]
+        append: true
+      when: vm_username | default('') | length > 0
+
+    - name: ensure .ssh directory exists
+      ansible.builtin.file:
+        path: "/home/{{ vm_username }}/.ssh"
+        state: directory
+        owner: "{{ vm_username }}"
+        group: "{{ vm_username }}"
+        mode: "0700"
+      when: vm_username | default('') | length > 0
+
+    - name: copy bootstrap user authorized_keys to vm username
+      ansible.builtin.copy:
+        src: "/home/{{ ansible_user }}/.ssh/authorized_keys"
+        dest: "/home/{{ vm_username }}/.ssh/authorized_keys"
+        owner: "{{ vm_username }}"
+        group: "{{ vm_username }}"
+        mode: "0600"
+        remote_src: true
+      when: vm_username | default('') | length > 0
+
 - name: setup sunshine
   hosts: all
   become: true
   tasks:
+    - name: set desktop user for sunshine and GDM
+      ansible.builtin.set_fact:
+        desktop_user: "{{ vm_username | default('') | ternary(vm_username, 'ubuntu') }}"
 
     - name: add to render and video groups
       ansible.builtin.user:
-        name: ubuntu
-        uid: 1000
+        name: "{{ desktop_user }}"
         groups: ['render', 'video']
+        append: true
     - name: Install a .deb package from the internet using the apt module
       ansible.builtin.apt:
         update-cache: true
@@ -52,7 +86,7 @@
         path: '/etc/gdm3/custom.conf'
         block: |
           AutomaticLoginEnable = true
-          AutomaticLogin = ubuntu
+          AutomaticLogin = {{ desktop_user }}
         insertafter: '\[daemon\]'
     - name: 'graphical environment started on boot'
       systemd:
@@ -94,17 +128,17 @@
     #     state: present
     - name: make a directory for sunshine conf contents
       ansible.builtin.file:
-        path: /home/ubuntu/.config/sunshine
+        path: /home/{{ desktop_user }}/.config/sunshine
         state: directory
-      become_user: ubuntu
+      become_user: "{{ desktop_user }}"
     - name: set sunshine configuration contents
       ansible.builtin.copy:
         src: files/sunshine_setup/sunshine.conf
-        dest: /home/ubuntu/.config/sunshine/sunshine.conf
-      become_user: ubuntu
+        dest: /home/{{ desktop_user }}/.config/sunshine/sunshine.conf
+      become_user: "{{ desktop_user }}"
     - name: add specific host to ending of config file
       ansible.builtin.lineinfile:
-        path: '/home/ubuntu/.config/sunshine/sunshine.conf'
+        path: '/home/{{ desktop_user }}/.config/sunshine/sunshine.conf'
         line: 'csrf_allowed_origins = https://{{csrf_hostname}}.{{prj_name}}.projects.jetstream-cloud.org:47990'
         create: yes
     - name: debug show csrf hostname
@@ -112,32 +146,32 @@
         msg: 'https://{{csrf_hostname}}.{{prj_name}}.projects.jetstream-cloud.org:47990'
     - name: set a few default variables in bashrc
       ansible.builtin.blockinfile:
-        path: /home/ubuntu/.bashrc
+        path: /home/{{ desktop_user }}/.bashrc
         insertafter: EOF
         block: |
-          export XAUTHORITY=/run/user/1000/gdm/Xauthority
+          export XAUTHORITY=/run/user/$(id -u)/gdm/Xauthority
           export DISPLAY=:0
     - name: make a directory
       ansible.builtin.file:
-        path: /home/ubuntu/.config/systemd/user/
+        path: /home/{{ desktop_user }}/.config/systemd/user/
         state: directory
-      become_user: ubuntu
+      become_user: "{{ desktop_user }}"
     - name: copy sunshine service to user folder
       ansible.builtin.copy:
         src: files/sunshine_setup/sunshine.service
-        dest: /home/ubuntu/.config/systemd/user/sunshine.service
-      become_user: ubuntu
+        dest: /home/{{ desktop_user }}/.config/systemd/user/sunshine.service
+      become_user: "{{ desktop_user }}"
     - name: user daemon reload
       ansible.builtin.systemd:
         scope: user
         daemon_reload: true
-      become_user: ubuntu
+      become_user: "{{ desktop_user }}"
     - name: user systemd enable sunshine
       ansible.builtin.systemd:
         scope: user
         enabled: true
         name: sunshine
-      become_user: ubuntu
+      become_user: "{{ desktop_user }}"
     # - name: install openstack sdk , gets the right sdk and determines if flag is needed depending on os
     #   command: "pip3 install {{ open_stack_sdk_and_flag }}"
     # - name: shelve a compute instance

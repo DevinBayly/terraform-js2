@@ -6,6 +6,8 @@ resource "local_file" "ansible-inventory" {
         server_names = openstack_compute_instance_v2.os_instances.*.name # we could use this instead of an generically generated index name
         prj_name = var.project
         server_ids = openstack_compute_instance_v2.os_instances.*.id
+        vm_username_by_index = local.vm_username_by_index
+        cacao_user = split("@", var.username)[0]
     })
     filename = "${path.module}/ansible/hosts.yml"
 }

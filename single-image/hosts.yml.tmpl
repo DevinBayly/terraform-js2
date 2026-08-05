@@ -10,6 +10,7 @@ all:
 %{ for index, group in server_ips ~}
         ${ server_names[index] }:
             ansible_host: ${ server_ips[index] }
+            vm_username: "${ vm_username_by_index[index] }"
             csrf_hostname: '${ server_names[index] }'
             prj_name: '${lower(prj_name)}'
             openstack_server_id: '${server_ids[index]}'
@@ -17,6 +18,7 @@ all:
 %{ endfor ~}
     vars:
         CONNECTION_USERNAMES:
+          - '${ cacao_user }'
           - 'ubuntu'
           - 'almalinux'
           - 'rocky'

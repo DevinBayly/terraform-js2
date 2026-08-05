@@ -27,6 +27,12 @@ variable "instance_count" {
   default = 1
 }
 
+variable "vm_usernames" {
+  type        = string
+  description = "Comma-separated UNIX usernames, one per VM; empty keeps default image user"
+  default     = ""
+}
+
 variable "image" {
   type = string
   description = "string, image id; image will have priority if both image and image name are provided"

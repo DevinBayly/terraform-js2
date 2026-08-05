@@ -40,6 +40,11 @@
                     ]
                 },
                 {
+                    "name": "vm_usernames",
+                    "ui_label": "VM usernames (one per instance)",
+                    "help_text": "Comma-separated list, e.g. alice,bob,carol. Must match # of Instances. Leave blank to use the image default user."
+                },
+                {
                     "type": "advanced_settings",
                     "collapsible": true,
                     "title": "Advanced",

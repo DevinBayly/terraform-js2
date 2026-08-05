@@ -41,6 +41,14 @@ resource "openstack_compute_instance_v2" "os_instances" {
       condition = var.image != "" || var.image_name != ""
       error_message = "ERROR: template input image or image_name must be set"
     }
+    precondition {
+      condition     = length(local.vm_usernames) == 0 || length(local.vm_usernames) == var.instance_count
+      error_message = "vm_usernames must be empty or contain exactly ${var.instance_count} comma-separated names."
+    }
+    precondition {
+      condition     = length(local.vm_usernames) == 0 || alltrue([for u in local.vm_usernames : u != ""])
+      error_message = "vm_usernames must not contain blank entries."
+    }
     ignore_changes = [
       image_id, block_device.0.uuid, name, user_data
     ]
@@ -85,4 +93,13 @@ data "openstack_images_image_v2" "instance_image" {
 locals {
   image_uuid = var.image_name == "" ? var.image : data.openstack_images_image_v2.instance_image.0.id
   volume_size = var.root_storage_size > 0 ? var.root_storage_size : null
+
+  vm_usernames = var.vm_usernames == "" ? [] : [
+    for u in split(",", var.vm_usernames) : trimspace(u)
+  ]
+
+  vm_username_by_index = {
+    for i in range(var.instance_count) :
+    i => try(local.vm_usernames[i], "")
+  }
 }

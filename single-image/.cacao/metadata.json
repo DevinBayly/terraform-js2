@@ -41,6 +41,13 @@
       "editable": true
     },
     {
+      "name": "vm_usernames",
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated UNIX usernames, one per VM (count must match instance_count)",
+      "editable": true
+    },
+    {
       "name": "image",
       "type": "cacao_provider_image",
       "description": "Boot image id",
