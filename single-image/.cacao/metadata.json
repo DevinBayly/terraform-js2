@@ -119,6 +119,13 @@
       "type": "bool",
       "description": "if true, will delete the root storage when instance is deleted",
       "default": true
+    },
+    {
+      "name": "do_shelve_cycle",
+      "type": "bool",
+      "description": "if true, shelve then unshelve each instance after ansible completes",
+      "default": true,
+      "editable": true
     }
   ]
 }

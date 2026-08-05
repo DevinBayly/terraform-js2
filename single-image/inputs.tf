@@ -110,3 +110,15 @@ variable "do_ansible_execution" {
   description = "bool, if true run ansible"
   default = true
 }
+
+variable "do_shelve_cycle" {
+  type        = bool
+  description = "bool, if true shelve then unshelve each instance after ansible completes"
+  default     = true
+}
+
+variable "shelve_gap_seconds" {
+  type        = number
+  description = "number, seconds to pause between each step of the shelve/unshelve cycle"
+  default     = 60
+}

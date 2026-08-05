@@ -51,6 +51,11 @@
                     "items": [
                         {
                             "name": "root_storage"
+                        },
+                        {
+                            "name": "do_shelve_cycle",
+                            "ui_label": "Shelve/unshelve after configuration",
+                            "help_text": "Shelve then unshelve each VM after Ansible completes to refresh the guest on a new hypervisor. Disable to skip."
                         }
                     ]
                 }
