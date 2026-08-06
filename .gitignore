@@ -34,5 +34,6 @@ override.tf.json
 *openrc.sh
 *.sh
 *inventory.ini
+**/ansible/hosts.yml
 .DS_STORE
 cacao_token

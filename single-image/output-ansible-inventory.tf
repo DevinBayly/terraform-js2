@@ -7,9 +7,11 @@ resource "local_file" "ansible-inventory" {
         prj_name = var.project
         server_ids = openstack_compute_instance_v2.os_instances.*.id
         vm_username_by_index = local.vm_username_by_index
+        vm_password_b64_by_index = local.vm_password_b64_by_index
         cacao_user = split("@", var.username)[0]
     })
-    filename = "${path.module}/ansible/hosts.yml"
+    filename        = "${path.module}/ansible/hosts.yml"
+    file_permission = "0600"
 }
 
 resource "null_resource" "ansible-execution" {

@@ -61,6 +61,50 @@
         remote_src: true
       when: vm_username | default('') | length > 0
 
+    - name: set login password for vm user
+      ansible.builtin.user:
+        name: "{{ vm_username }}"
+        password: "{{ vm_password_b64 | b64decode | password_hash('sha512') }}"
+        update_password: always
+      no_log: true
+      when:
+        - vm_username | default('') | length > 0
+        - vm_password_b64 | default('') | length > 0
+
+    # Include at top of sshd_config is read first; 50-cloud-init.conf sets
+    # PasswordAuthentication no, so this file must sort before it to win
+    - name: enable ssh password authentication via drop-in
+      ansible.builtin.copy:
+        dest: /etc/ssh/sshd_config.d/01-cacao-password-auth.conf
+        content: |
+          PasswordAuthentication yes
+        mode: "0644"
+        owner: root
+        group: root
+      register: sshd_dropin
+      when: vm_password_b64 | default('') | length > 0
+
+    - name: enable ssh password authentication in main config
+      ansible.builtin.lineinfile:
+        dest: /etc/ssh/sshd_config
+        backup: true
+        regexp: '^#?\s*PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+        state: present
+      register: sshd_main
+      when: vm_password_b64 | default('') | length > 0
+
+    - name: validate sshd config before restarting
+      ansible.builtin.command: /usr/sbin/sshd -t
+      changed_when: false
+      when: sshd_dropin.changed or sshd_main.changed
+
+    - name: restart ssh
+      ansible.builtin.systemd:
+        name: ssh
+        state: restarted
+      when: sshd_dropin.changed or sshd_main.changed
+
 - name: setup sunshine
   hosts: all
   become: true

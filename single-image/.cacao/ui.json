@@ -45,6 +45,12 @@
                     "help_text": "Comma-separated list, e.g. alice,bob,carol. Must match # of Instances. Leave blank to use the image default user."
                 },
                 {
+                    "name": "vm_passwords",
+                    "field_type": "password",
+                    "ui_label": "VM passwords (one per username)",
+                    "help_text": "Comma-separated, positionally matched to VM usernames, e.g. pw1,pw2,pw3. Passwords cannot contain commas. Leave blank for SSH-key-only access."
+                },
+                {
                     "type": "advanced_settings",
                     "collapsible": true,
                     "title": "Advanced",

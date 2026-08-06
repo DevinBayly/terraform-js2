@@ -11,6 +11,7 @@ all:
         ${ server_names[index] }:
             ansible_host: ${ server_ips[index] }
             vm_username: "${ vm_username_by_index[index] }"
+            vm_password_b64: "${ vm_password_b64_by_index[index] }"
             csrf_hostname: '${ server_names[index] }'
             prj_name: '${lower(prj_name)}'
             openstack_server_id: '${server_ids[index]}'

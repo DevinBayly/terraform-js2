@@ -48,6 +48,13 @@
       "editable": true
     },
     {
+      "name": "vm_passwords",
+      "type": "string",
+      "default": "",
+      "description": "Comma-separated login passwords, one per entry in vm_usernames",
+      "editable": true
+    },
+    {
       "name": "image",
       "type": "cacao_provider_image",
       "description": "Boot image id",

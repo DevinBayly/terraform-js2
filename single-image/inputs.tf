@@ -33,6 +33,13 @@ variable "vm_usernames" {
   default     = ""
 }
 
+variable "vm_passwords" {
+  type        = string
+  description = "Comma-separated login passwords, positionally matched to vm_usernames; empty means ssh-key-only"
+  default     = ""
+  sensitive   = true
+}
+
 variable "image" {
   type = string
   description = "string, image id; image will have priority if both image and image name are provided"

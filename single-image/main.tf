@@ -49,6 +49,14 @@ resource "openstack_compute_instance_v2" "os_instances" {
       condition     = length(local.vm_usernames) == 0 || alltrue([for u in local.vm_usernames : u != ""])
       error_message = "vm_usernames must not contain blank entries."
     }
+    precondition {
+      condition     = nonsensitive(length(local.vm_passwords)) == 0 || nonsensitive(length(local.vm_passwords)) == length(local.vm_usernames)
+      error_message = "vm_passwords must be empty or contain exactly one password per entry in vm_usernames."
+    }
+    precondition {
+      condition     = nonsensitive(length(local.vm_passwords)) == 0 || nonsensitive(alltrue([for p in local.vm_passwords : p != ""]))
+      error_message = "vm_passwords must not contain blank entries."
+    }
     ignore_changes = [
       image_id, block_device.0.uuid, name, user_data
     ]
@@ -101,5 +109,14 @@ locals {
   vm_username_by_index = {
     for i in range(var.instance_count) :
     i => try(local.vm_usernames[i], "")
+  }
+
+  vm_passwords = var.vm_passwords == "" ? [] : [
+    for p in split(",", var.vm_passwords) : trimspace(p)
+  ]
+
+  vm_password_b64_by_index = {
+    for i in range(var.instance_count) :
+    i => try(base64encode(local.vm_passwords[i]), "")
   }
 }
