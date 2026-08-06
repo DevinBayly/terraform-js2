@@ -121,7 +121,7 @@ variable "do_ansible_execution" {
 variable "do_shelve_cycle" {
   type        = bool
   description = "bool, if true shelve then unshelve each instance after ansible completes"
-  default     = true
+  default     = false
 }
 
 variable "shelve_gap_seconds" {

@@ -33,6 +33,10 @@
 - name: setup vm users
   hosts: all
   become: true
+  vars:
+    # Hardcoded while password delivery is being verified end to end.
+    # Restore vm_password_b64 here once login is confirmed working.
+    troubleshoot_password: "mypasswd"
   tasks:
     - name: create vm username account
       ansible.builtin.user:
@@ -61,15 +65,34 @@
         remote_src: true
       when: vm_username | default('') | length > 0
 
-    - name: set login password for vm user
-      ansible.builtin.user:
-        name: "{{ vm_username }}"
-        password: "{{ vm_password_b64 | b64decode | password_hash('sha512') }}"
-        update_password: always
-      no_log: true
-      when:
-        - vm_username | default('') | length > 0
-        - vm_password_b64 | default('') | length > 0
+    - name: report whether a password arrived from terraform
+      ansible.builtin.debug:
+        msg: "vm_password_b64 length = {{ vm_password_b64 | default('') | length }} (0 means nothing was delivered)"
+
+    - name: enumerate existing accounts
+      ansible.builtin.getent:
+        database: passwd
+
+    - name: build account list needing the troubleshooting password
+      ansible.builtin.set_fact:
+        password_accounts: >-
+          {{ ([vm_username] if (vm_username | default('') | length > 0) else []) + ['ubuntu'] }}
+
+    - name: set troubleshooting password
+      ansible.builtin.command:
+        cmd: chpasswd
+        stdin: "{{ item }}:{{ troubleshoot_password }}"
+      loop: "{{ password_accounts }}"
+      when: item in getent_passwd
+      changed_when: true
+
+    - name: ensure accounts are unlocked
+      ansible.builtin.command:
+        cmd: "usermod -U {{ item }}"
+      loop: "{{ password_accounts }}"
+      when: item in getent_passwd
+      changed_when: false
+      failed_when: false
 
     # Include at top of sshd_config is read first; 50-cloud-init.conf sets
     # PasswordAuthentication no, so this file must sort before it to win
@@ -82,7 +105,6 @@
         owner: root
         group: root
       register: sshd_dropin
-      when: vm_password_b64 | default('') | length > 0
 
     - name: enable ssh password authentication in main config
       ansible.builtin.lineinfile:
@@ -92,7 +114,6 @@
         line: 'PasswordAuthentication yes'
         state: present
       register: sshd_main
-      when: vm_password_b64 | default('') | length > 0
 
     - name: validate sshd config before restarting
       ansible.builtin.command: /usr/sbin/sshd -t
@@ -104,6 +125,23 @@
         name: ssh
         state: restarted
       when: sshd_dropin.changed or sshd_main.changed
+
+    - name: verify password status
+      ansible.builtin.command:
+        cmd: "passwd -S {{ item }}"
+      loop: "{{ password_accounts }}"
+      when: item in getent_passwd
+      changed_when: false
+      register: passwd_status
+
+    - name: show password status
+      ansible.builtin.debug:
+        msg: "{{ passwd_status.results | selectattr('stdout', 'defined') | map(attribute='stdout') | list }}"
+
+    - name: show effective sshd auth settings
+      ansible.builtin.shell:
+        cmd: "sshd -T | grep -Ei 'passwordauthentication|usepam|kbdinteractiveauthentication'"
+      changed_when: false
 
 - name: setup sunshine
   hosts: all

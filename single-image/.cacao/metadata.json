@@ -131,7 +131,7 @@
       "name": "do_shelve_cycle",
       "type": "bool",
       "description": "if true, shelve then unshelve each instance after ansible completes",
-      "default": true,
+      "default": false,
       "editable": true
     }
   ]
